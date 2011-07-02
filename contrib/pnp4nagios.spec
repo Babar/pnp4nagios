@@ -1,6 +1,6 @@
 Name:         pnp4nagios
 Version:      0.6.13
-Release:      1
+Release:      2%{?dist}
 License:      GNU Public License version 2
 Packager:     Olivier Raginel <babar@cern.ch>
 Vendor:       PNP4nagios team
@@ -26,8 +26,9 @@ This is the version with support for Gearman, suitable to use with mod_gearman.
 %setup -q
 
 %build
-./configure --with-nagios-user=nagios \
-    --with-nagios-group=nagios \
+%configure \
+    --with-nagios-user=icinga \
+    --with-nagios-group=icinga \
     --prefix=%{_prefix} \
     --libdir=%{_libdir}/%{name} \
     --sysconfdir=%{_sysconfdir}/%{name} \
@@ -39,13 +40,13 @@ This is the version with support for Gearman, suitable to use with mod_gearman.
 %{__make} all
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/%{_prefix}
+%{__rm} -rf %{buildroot}
+mkdir -p %{buildroot}/%{_prefix}
 
-%{__make} install fullinstall DESTDIR=$RPM_BUILD_ROOT INIT_OPTS= INSTALL_OPTS=
+%{__make} install fullinstall DESTDIR=%{buildroot} INIT_OPTS= INSTALL_OPTS=
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf ${buildroot}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -59,5 +60,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_localstatedir} 
 
 %changelog
+* Fri Jul 01 2011 Olivier Raginel <babar@cern.ch>
+- Tweaks for latest 0.6.13 version
 * Wed Oct 21 2010 Olivier Raginel <babar@cern.ch>
 - First build
